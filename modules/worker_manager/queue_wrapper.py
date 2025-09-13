@@ -13,7 +13,9 @@ class QueueWrapper:
     __create_key = object()
 
     @classmethod
-    def create(cls, mp_manager: multiprocessing.managers.SyncManager, max_size: int) -> "tuple[True, QueueWrapper] | tuple[False, None]":
+    def create(
+        cls, mp_manager: multiprocessing.managers.SyncManager, max_size: int
+    ) -> "tuple[True, QueueWrapper] | tuple[False, None]":
         """
         mp_manager: Python multiprocessing manager.
         max_size: Maximum number of items the queue can hold.
@@ -22,7 +24,12 @@ class QueueWrapper:
         """
         return True, QueueWrapper(cls.__create_key, mp_manager, max_size)
 
-    def __init__(self, class_private_create_key: object, mp_manager: multiprocessing.managers.SyncManager, max_size: int) -> None:
+    def __init__(
+        self,
+        class_private_create_key: object,
+        mp_manager: multiprocessing.managers.SyncManager,
+        max_size: int,
+    ) -> None:
         """
         Private constructor, use create() method.
         """

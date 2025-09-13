@@ -14,6 +14,7 @@ class TestCreate:
     """
     Test create() method.
     """
+
     def test_normal(self) -> None:
         """
         Normal.
