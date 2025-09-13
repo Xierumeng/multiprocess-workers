@@ -13,6 +13,18 @@ from modules.worker_manager import worker_manager
 
 
 @pytest.fixture
+def manager() -> worker_manager.WorkerManager:  # type: ignore
+    """
+    Worker manager.
+    """
+    result, manager = worker_manager.WorkerManager.create()
+    assert result
+    assert manager is not None
+
+    yield manager  # type: ignore
+
+
+@pytest.fixture
 def queue_properties() -> list[worker_manager.QueuePropertyData]:  # type: ignore
     """
     Some queue properties in a list.
@@ -30,36 +42,58 @@ def queue_properties() -> list[worker_manager.QueuePropertyData]:  # type: ignor
     yield [queue_property_1, queue_property_2]  # type: ignore
 
 
-class TestCreate:
+class TestAddQueues:
     """
-    Test create() method.
+    Test add_queues() method.
     """
-    def test_normal(self, queue_properties: list[worker_manager.QueuePropertyData]) -> None:
+
+    def test_normal(
+        self,
+        manager: worker_manager.WorkerManager,
+        queue_properties: list[worker_manager.QueuePropertyData],
+    ) -> None:
         """
         Normal.
         """
-        result, manager = worker_manager.WorkerManager.create(queue_properties)
+        count_added = manager.add_queues(queue_properties)
 
-        assert result
-        assert manager is not None
+        assert count_added == len(queue_properties)
 
-
-    def test_queue_properties_empty(self) -> None:
+    def test_empty(self, manager: worker_manager.WorkerManager) -> None:
         """
         Empty queue_properties.
         """
-        result, manager = worker_manager.WorkerManager.create([])
+        count_added = manager.add_queues([])
 
-        assert not result
-        assert manager is None
+        assert count_added == 0
 
-    def test_queue_properties_with_duplicate(self, queue_properties: list[worker_manager.QueuePropertyData]) -> None:
+    def test_duplicate_in_argument(
+        self,
+        manager: worker_manager.WorkerManager,
+        queue_properties: list[worker_manager.QueuePropertyData],
+    ) -> None:
         """
         Duplicate entry in queue_properties.
         """
         queue_properties.append(queue_properties[0])
 
-        result, manager = worker_manager.WorkerManager.create(queue_properties)
+        count_added = manager.add_queues(queue_properties)
 
-        assert not result
-        assert manager is None
+        assert count_added == 2
+
+    def test_duplicate_in_manager(
+        self,
+        manager: worker_manager.WorkerManager,
+        queue_properties: list[worker_manager.QueuePropertyData],
+    ) -> None:
+        """
+        Duplicate entry already in manager.
+        """
+        count_added = manager.add_queues(queue_properties[0:1])
+        assert count_added == 1
+
+        count_added = manager.add_queues(queue_properties)
+        assert count_added == 1
+
+        count_added = manager.add_queues(queue_properties)
+        assert count_added == 0
