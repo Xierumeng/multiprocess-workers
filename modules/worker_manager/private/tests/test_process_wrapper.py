@@ -24,7 +24,9 @@ def stub1(controller: worker_controller.WorkerController) -> None:
     Stub function.
     """
 
+
 # pylint: enable=unused-argument
+
 
 # Stub function.
 # pylint: disable=unused-argument
@@ -40,6 +42,7 @@ def stub2(
     """
     Stub function.
     """
+
 
 # pylint: enable=unused-argument
 
@@ -123,11 +126,18 @@ class TestCreate:
         assert result
         assert worker is not None
 
-    def test_normal_2(self, input_queues: list[queue_wrapper.QueueWrapper], output_queues: list[queue_wrapper.QueueWrapper], controller: worker_controller.WorkerController) -> None:
+    def test_normal_2(
+        self,
+        input_queues: list[queue_wrapper.QueueWrapper],
+        output_queues: list[queue_wrapper.QueueWrapper],
+        controller: worker_controller.WorkerController,
+    ) -> None:
         """
         Normal.
         """
-        result, worker = process_wrapper.ProcessWrapper.create(stub2, (0, ""), input_queues, output_queues, controller)
+        result, worker = process_wrapper.ProcessWrapper.create(
+            stub2, (0, ""), input_queues, output_queues, controller
+        )
 
         assert result
         assert worker is not None

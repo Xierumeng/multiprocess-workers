@@ -49,7 +49,9 @@ class ProcessWrapper:
 
         Return: Success, object.
         """
-        result = cls.__is_signature_match(target_function, target_arguments, input_queues, output_queues)
+        result = cls.__is_signature_match(
+            target_function, target_arguments, input_queues, output_queues
+        )
         if not result:
             print(f"ERROR: Failed to create worker process: {target_function}")
             return False, None
@@ -102,33 +104,46 @@ class ProcessWrapper:
         output_queues_length = len(output_queues)
         controller_argument_length = 1
 
-        total_argument_length = argument_length + input_queues_length + output_queues_length + controller_argument_length
+        total_argument_length = (
+            argument_length
+            + input_queues_length
+            + output_queues_length
+            + controller_argument_length
+        )
 
         target_signature = inspect.signature(target_function)
         target_parameter_names = list(target_signature.parameters)
 
         if total_argument_length != len(target_parameter_names):
-            print(f"ERROR: Argument length does not match function signature: {target_function}: {target_signature}")
+            print(
+                f"ERROR: Argument length does not match function signature: {target_function}: {target_signature}"
+            )
             return False
 
         input_start_index = argument_length
         input_end_index = input_start_index + input_queues_length
-        result = ProcessWrapper.__is_queue_names_match(input_queues, target_parameter_names[input_start_index:input_end_index])
+        result = ProcessWrapper.__is_queue_names_match(
+            input_queues, target_parameter_names[input_start_index:input_end_index]
+        )
         if not result:
-            print(f"ERROR: Input queue names do not match function parameters")
+            print("ERROR: Input queue names do not match function parameters")
             return False
 
         output_start_index = input_end_index
         output_end_index = output_start_index + output_queues_length
-        result = ProcessWrapper.__is_queue_names_match(output_queues, target_parameter_names[output_start_index:output_end_index])
+        result = ProcessWrapper.__is_queue_names_match(
+            output_queues, target_parameter_names[output_start_index:output_end_index]
+        )
         if not result:
-            print(f"ERROR: Output queue names do not match function parameters")
+            print("ERROR: Output queue names do not match function parameters")
             return False
 
         return True
 
     @staticmethod
-    def __is_queue_names_match(queues: list[queue_wrapper.QueueWrapper], parameter_names: list[str]) -> bool:
+    def __is_queue_names_match(
+        queues: list[queue_wrapper.QueueWrapper], parameter_names: list[str]
+    ) -> bool:
         """
         Check queue names match parameter names.
 
@@ -139,11 +154,13 @@ class ProcessWrapper:
             print(f"ERROR: Length mismatch: {len(queues)} != {len(parameter_names)}")
             return False
 
-        for queue_wrapper, parameter_name in zip(queues, parameter_names):
-            queue_name = queue_wrapper.queue_property.name
+        for queue, parameter_name in zip(queues, parameter_names):
+            queue_name = queue.queue_property.name
 
             if queue_name != parameter_name:
-                print(f"ERROR: Queue name: {queue_name} does not match expected parameter: {parameter_name}")
+                print(
+                    f"ERROR: Queue name: {queue_name} does not match expected parameter: {parameter_name}"
+                )
                 return False
 
         return True

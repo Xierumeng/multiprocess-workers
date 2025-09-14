@@ -53,11 +53,15 @@ def input_queue_properties() -> list[queue_property_data.QueuePropertyData]:  # 
     """
     max_size = 5
 
-    result, input_queue_property_1 = queue_property_data.QueuePropertyData.create("input_queue_1", max_size)
+    result, input_queue_property_1 = queue_property_data.QueuePropertyData.create(
+        "input_queue_1", max_size
+    )
     assert result
     assert input_queue_property_1 is not None
 
-    result, input_queue_property_2 = queue_property_data.QueuePropertyData.create("input_queue_2", max_size)
+    result, input_queue_property_2 = queue_property_data.QueuePropertyData.create(
+        "input_queue_2", max_size
+    )
     assert result
     assert input_queue_property_2 is not None
 
@@ -71,11 +75,15 @@ def output_queue_properties() -> list[queue_property_data.QueuePropertyData]:  #
     """
     max_size = 5
 
-    result, output_queue_property_1 = queue_property_data.QueuePropertyData.create("output_queue_1", max_size)
+    result, output_queue_property_1 = queue_property_data.QueuePropertyData.create(
+        "output_queue_1", max_size
+    )
     assert result
     assert output_queue_property_1 is not None
 
-    result, output_queue_property_2 = queue_property_data.QueuePropertyData.create("output_queue_2", max_size)
+    result, output_queue_property_2 = queue_property_data.QueuePropertyData.create(
+        "output_queue_2", max_size
+    )
     assert result
     assert output_queue_property_2 is not None
 
