@@ -146,6 +146,7 @@ class WorkerManager:
         # Get Pylance to stop complaining
         assert output_queues is not None
 
+        # It is okay to drop these process handles since the workers have not been started.
         workers: list[process_wrapper.ProcessWrapper] = []
         for _ in range(0, worker_property.count):
             result, controller = worker_controller.WorkerController.create(
@@ -153,7 +154,6 @@ class WorkerManager:
             )
             if not result:
                 print(f"ERROR: Failed to create worker controller for: {worker_name}")
-                # TODO: Cleanup already created processes?
                 return False
 
             # Get Pylance to stop complaining
@@ -168,7 +168,6 @@ class WorkerManager:
             )
             if not result:
                 print(f"ERROR: Failed to create worker: {worker_name}")
-                # TODO: Cleanup already created processes?
                 return False
 
             # Get Pylance to stop complaining

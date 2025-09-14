@@ -79,8 +79,11 @@ class ProcessWrapper:
         """
         assert class_private_create_key is ProcessWrapper.__create_key, "Use create() method"
 
+        # TODO: Start using these
+        # pylint: disable=unused-private-member
         self.__worker = worker
         self.__controller = controller
+        # pylint: enable=unused-private-member
 
     @staticmethod
     def __is_signature_match(

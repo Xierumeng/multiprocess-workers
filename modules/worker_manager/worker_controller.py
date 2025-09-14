@@ -39,7 +39,10 @@ class WorkerController:
         """
         assert class_private_create_key is WorkerController.__create_key, "Use create() method"
 
+        # TODO: Start using these
+        # pylint: disable=unused-private-member
         self.__pause = mp.BoundedSemaphore(1)
 
         self.__manager_to_worker_queue = mp_manager.Queue(max_size)
         self.__worker_to_manager_queue = mp_manager.Queue(max_size)
+        # pylint: enable=unused-private-member
