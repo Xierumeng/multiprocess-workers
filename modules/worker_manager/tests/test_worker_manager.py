@@ -64,25 +64,45 @@ def worker_properties() -> list[worker_property_data.WorkerPropertyData]:  # typ
     """
     count = 1
 
+    # Stub function.
+    # pylint: disable=unused-argument
     def stub1(controller: worker_controller.WorkerController) -> None:
         """
         Stub function.
         """
 
-    def stub2(i: int, s: str, input_queue_1: queue_wrapper.QueueWrapper, input_queue_2: queue_wrapper.QueueWrapper, output_queue_1: queue_wrapper.QueueWrapper, output_queue_2: queue_wrapper.QueueWrapper, controller: worker_controller.WorkerController) -> None:
+    # pylint: enable=unused-argument
+
+    # Stub function.
+    # pylint: disable=unused-argument
+    def stub2(
+        i: int,
+        s: str,
+        input_queue_1: queue_wrapper.QueueWrapper,
+        input_queue_2: queue_wrapper.QueueWrapper,
+        output_queue_1: queue_wrapper.QueueWrapper,
+        output_queue_2: queue_wrapper.QueueWrapper,
+        controller: worker_controller.WorkerController,
+    ) -> None:
         """
         Stub function.
         """
+
+    # pylint: enable=unused-argument
 
     args2 = (2, "test")
     input_queue_names_2 = ["1", "2"]
     output_queue_names_2 = ["2", "1"]
 
-    result, worker_property_1 = worker_property_data.WorkerPropertyData.create(count, stub1, (), [], [])
+    result, worker_property_1 = worker_property_data.WorkerPropertyData.create(
+        count, stub1, (), [], []
+    )
     assert result
     assert worker_property_1 is not None
 
-    result, worker_property_2 = worker_property_data.WorkerPropertyData.create(count, stub2, args2, input_queue_names_2, output_queue_names_2)
+    result, worker_property_2 = worker_property_data.WorkerPropertyData.create(
+        count, stub2, args2, input_queue_names_2, output_queue_names_2
+    )
     assert result
     assert worker_property_2 is not None
 
@@ -150,7 +170,12 @@ class TestAddWorkerGroups:
     """
     Test add_worker_groups method.
     """
-    def test_normal(self, manager_with_queues: worker_manager.WorkerManager, worker_properties: list[worker_property_data.WorkerPropertyData]) -> None:
+
+    def test_normal(
+        self,
+        manager_with_queues: worker_manager.WorkerManager,
+        worker_properties: list[worker_property_data.WorkerPropertyData],
+    ) -> None:
         """
         Normal.
         """

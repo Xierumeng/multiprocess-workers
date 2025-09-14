@@ -14,7 +14,9 @@ class WorkerController:
     __create_key = object()
 
     @classmethod
-    def create(cls, mp_manager: multiprocessing.managers.SyncManager, max_size: int) -> tuple[True, "WorkerController"] | tuple[False, None]:
+    def create(
+        cls, mp_manager: multiprocessing.managers.SyncManager, max_size: int
+    ) -> tuple[True, "WorkerController"] | tuple[False, None]:
         """
         max_size: Maximum number of items that can be held in the queue. Must be greater than 0.
 
@@ -26,7 +28,12 @@ class WorkerController:
 
         return True, WorkerController(cls.__create_key, mp_manager, max_size)
 
-    def __init__(self, class_private_create_key: object, mp_manager: multiprocessing.managers.SyncManager, max_size: int) -> None:
+    def __init__(
+        self,
+        class_private_create_key: object,
+        mp_manager: multiprocessing.managers.SyncManager,
+        max_size: int,
+    ) -> None:
         """
         Private constructor, use create() method.
         """

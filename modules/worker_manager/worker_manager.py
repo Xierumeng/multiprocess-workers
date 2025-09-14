@@ -21,7 +21,8 @@ class WorkerManager:
 
     @classmethod
     def create(
-        cls, controller_max_size: int,
+        cls,
+        controller_max_size: int,
     ) -> tuple[True, "WorkerManager"] | tuple[False, None]:
         """
         controller_max_size: Maximum number of items that can be held in each of the worker controllers' queues. Must be greater than 0.
@@ -37,7 +38,10 @@ class WorkerManager:
         return True, WorkerManager(cls.__create_key, mp_manager, controller_max_size)
 
     def __init__(
-        self, class_private_create_key: object, mp_manager: multiprocessing.managers.SyncManager, controller_max_size: int
+        self,
+        class_private_create_key: object,
+        mp_manager: multiprocessing.managers.SyncManager,
+        controller_max_size: int,
     ) -> None:
         """
         Private constructor, use create() method.
@@ -49,7 +53,7 @@ class WorkerManager:
         self.__names_to_queue: dict[str, queue_wrapper.QueueWrapper] = {}
 
         self.__controller_max_size = controller_max_size
-        self.__names_to_worker_group: dict[str, list[process_wrapper.ProcessWrapper]]= {}
+        self.__names_to_worker_group: dict[str, list[process_wrapper.ProcessWrapper]] = {}
 
     def add_queues(self, queue_properties: list[queue_property_data.QueuePropertyData]) -> int:
         """
@@ -70,7 +74,8 @@ class WorkerManager:
                 continue
 
             result, queue = queue_wrapper.QueueWrapper.create(
-                self.__mp_manager, queue_property,
+                self.__mp_manager,
+                queue_property,
             )
             if not result:
                 print(f"ERROR: Failed to create queue: {queue_name}")
@@ -84,7 +89,9 @@ class WorkerManager:
 
         return count_added
 
-    def add_worker_groups(self, worker_properties: list[worker_property_data.WorkerPropertyData]) -> int:
+    def add_worker_groups(
+        self, worker_properties: list[worker_property_data.WorkerPropertyData]
+    ) -> int:
         """
         worker_properties: Property data of the worker groups to be added.
 
@@ -115,17 +122,25 @@ class WorkerManager:
             print(f"ERROR: Skipping worker group with duplicate name: {worker_name}")
             return False
 
-        result, input_queues = self.__get_queues(self.__names_to_queue, worker_property.input_queue_names)
+        result, input_queues = self.__get_queues(
+            self.__names_to_queue, worker_property.input_queue_names
+        )
         if not result:
-            print(f"ERROR: The worker group's input queue name does not exist, failed to create worker group: {worker_name}")
+            print(
+                f"ERROR: The worker group's input queue name does not exist, failed to create worker group: {worker_name}"
+            )
             return False
 
         # Get Pylance to stop complaining
         assert input_queues is not None
 
-        result, output_queues = self.__get_queues(self.__names_to_queue, worker_property.output_queue_names)
+        result, output_queues = self.__get_queues(
+            self.__names_to_queue, worker_property.output_queue_names
+        )
         if not result:
-            print(f"ERROR: The worker group's output queue name does not exist, failed to create worker group: {worker_name}")
+            print(
+                f"ERROR: The worker group's output queue name does not exist, failed to create worker group: {worker_name}"
+            )
             return False
 
         # Get Pylance to stop complaining
@@ -133,7 +148,9 @@ class WorkerManager:
 
         workers: list[process_wrapper.ProcessWrapper] = []
         for _ in range(0, worker_property.count):
-            result, controller = worker_controller.WorkerController.create(self.__mp_manager, self.__controller_max_size)
+            result, controller = worker_controller.WorkerController.create(
+                self.__mp_manager, self.__controller_max_size
+            )
             if not result:
                 print(f"ERROR: Failed to create worker controller for: {worker_name}")
                 # TODO: Cleanup already created processes?
@@ -142,7 +159,13 @@ class WorkerManager:
             # Get Pylance to stop complaining
             assert controller is not None
 
-            result, worker = process_wrapper.ProcessWrapper.create(worker_property.target_function, worker_property.target_arguments, input_queues, output_queues, controller)
+            result, worker = process_wrapper.ProcessWrapper.create(
+                worker_property.target_function,
+                worker_property.target_arguments,
+                input_queues,
+                output_queues,
+                controller,
+            )
             if not result:
                 print(f"ERROR: Failed to create worker: {worker_name}")
                 # TODO: Cleanup already created processes?
@@ -158,7 +181,9 @@ class WorkerManager:
         return True
 
     @staticmethod
-    def __get_queues(names_to_queue: dict[str, queue_wrapper.QueueWrapper], names: list[str]) -> tuple[True, list[queue_wrapper.QueueWrapper]] | tuple[False, None]:
+    def __get_queues(
+        names_to_queue: dict[str, queue_wrapper.QueueWrapper], names: list[str]
+    ) -> tuple[True, list[queue_wrapper.QueueWrapper]] | tuple[False, None]:
         """
         Get queues given the requested names.
         """

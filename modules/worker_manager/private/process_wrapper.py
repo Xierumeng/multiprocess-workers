@@ -22,7 +22,7 @@ class ProcessWrapper:
         target_arguments: tuple,
         input_queues: list[queue_wrapper.QueueWrapper],
         output_queues: list[queue_wrapper.QueueWrapper],
-        controller: worker_controller.WorkerController
+        controller: worker_controller.WorkerController,
     ) -> tuple[True, "ProcessWrapper"] | tuple[False, None]:
         """
         target_function: Function to run. The function signature is expected to be:

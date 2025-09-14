@@ -16,7 +16,9 @@ class QueueWrapper:
 
     @classmethod
     def create(
-        cls, mp_manager: multiprocessing.managers.SyncManager, queue_property: queue_property_data.QueuePropertyData,
+        cls,
+        mp_manager: multiprocessing.managers.SyncManager,
+        queue_property: queue_property_data.QueuePropertyData,
     ) -> tuple[True, "QueueWrapper"] | tuple[False, None]:
         """
         queue_property: Queue property data.

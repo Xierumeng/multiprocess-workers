@@ -2,6 +2,7 @@
 Worker property data.
 """
 
+
 class WorkerPropertyData:
     """
     Properties about the worker.

@@ -2,6 +2,7 @@
 Queue property data.
 """
 
+
 class QueuePropertyData:
     """
     Properties about the queue.
