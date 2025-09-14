@@ -2,7 +2,7 @@
 Test queue property.
 """
 
-from modules.worker_manager import worker_manager
+from modules.worker_manager import queue_property_data
 
 
 # Test functions use test fixture signature names and access class privates
@@ -22,7 +22,7 @@ class TestCreate:
         name = "abc"
         max_size = 5
 
-        result, queue_property = worker_manager.QueuePropertyData.create(name, max_size)
+        result, queue_property = queue_property_data.QueuePropertyData.create(name, max_size)
 
         assert result
         assert queue_property is not None
@@ -34,7 +34,7 @@ class TestCreate:
         name = ""
         max_size = 5
 
-        result, queue_property = worker_manager.QueuePropertyData.create(name, max_size)
+        result, queue_property = queue_property_data.QueuePropertyData.create(name, max_size)
 
         assert not result
         assert queue_property is None
@@ -46,7 +46,7 @@ class TestCreate:
         name = "abc"
         max_size = 0
 
-        result, queue_property = worker_manager.QueuePropertyData.create(name, max_size)
+        result, queue_property = queue_property_data.QueuePropertyData.create(name, max_size)
 
         assert not result
         assert queue_property is None
@@ -58,7 +58,7 @@ class TestCreate:
         name = "abc"
         max_size = -1
 
-        result, queue_property = worker_manager.QueuePropertyData.create(name, max_size)
+        result, queue_property = queue_property_data.QueuePropertyData.create(name, max_size)
 
         assert not result
         assert queue_property is None

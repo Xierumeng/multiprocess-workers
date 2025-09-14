@@ -5,118 +5,8 @@ Worker manager.
 import multiprocessing as mp
 import multiprocessing.managers
 
+from . import queue_property_data
 from . import queue_wrapper
-
-
-class QueuePropertyData:
-    """
-    Properties about the queue.
-    """
-
-    __create_key = object()
-
-    @classmethod
-    def create(
-        cls, name: str, max_size: int
-    ) -> "tuple[True, QueuePropertyData] | tuple[False, None]":
-        """
-        name: Name of the queue. Must not be empty string.
-        max_size: Maximum number of items that can be held in the queue.
-
-        Return: Success, object.
-        """
-        if name == "":
-            print("ERROR: Name cannot be empty")
-            return False, None
-
-        if max_size <= 0:
-            print("ERROR: Queue max size must be greater than 0")
-            return False, None
-
-        return True, QueuePropertyData(cls.__create_key, name, max_size)
-
-    def __init__(self, class_private_create_key: object, name: str, max_size: int) -> None:
-        """
-        Private constructor, use create() method.
-        """
-        assert class_private_create_key is QueuePropertyData.__create_key, "Use create() method"
-
-        self.name = name
-        self.max_size = max_size
-
-
-class WorkerPropertyData:
-    """
-    Properties about the worker.
-    """
-
-    __create_key = object()
-
-    @classmethod
-    def create(
-        cls,
-        count: int,
-        target_function: "(...) -> object",  # type: ignore
-        target_arguments: tuple,
-        input_queue_names: list[str],
-        output_queue_names: list[str],
-    ) -> tuple[True, "WorkerPropertyData"] | tuple[False, None]:
-        """
-        count: Number of workers. Must be greater than 0.
-        target_function: Function to run. The function signature is expected to be:
-            target_function(
-                target_arguments[0],
-                target_arguments[1],
-                ...
-                target_arguments[P],
-                queue from input_queue_names[0],
-                queue from input_queue_names[1],
-                ...
-                queue from input_queue_names[Q],
-                queue from output_queue_names[0],
-                queue from output_queue_names[1],
-                ...
-                queue from output_queue_names[R],
-                queue for manager to worker communication,
-                queue for worker to manager communication,
-            )
-            All queues are multiprocessing queues.
-        target_arguments: Arguments for the function. Can be empty.
-        input_queue_names: Names of the input queues. Can be empty.
-        output_queue_names: Names of the output queues. Can be empty.
-        """
-        if count <= 0:
-            print("ERROR: No workers")
-            return False, None
-
-        return True, WorkerPropertyData(
-            cls.__create_key,
-            count,
-            target_function,
-            target_arguments,
-            input_queue_names,
-            output_queue_names,
-        )
-
-    def __init__(
-        self,
-        class_private_create_key: object,
-        count: int,
-        target_function: "(...) -> object",  # type: ignore
-        target_arguments: tuple,
-        input_queue_names: list[str],
-        output_queue_names: list[str],
-    ) -> None:
-        """
-        Private constructor, use create() method.
-        """
-        assert class_private_create_key is WorkerPropertyData.__create_key, "Use create() method"
-
-        self.count = count
-        self.target_function = target_function
-        self.target_arguments = target_arguments
-        self.input_queue_names = input_queue_names
-        self.output_queue_names = output_queue_names
 
 
 class WorkerManager:
@@ -129,7 +19,7 @@ class WorkerManager:
     @classmethod
     def create(
         cls,
-    ) -> "tuple[True, WorkerManager] | tuple[False, None]":
+    ) -> tuple[True, "WorkerManager"] | tuple[False, None]:
         """
         Return: Success, object.
         """
@@ -146,9 +36,10 @@ class WorkerManager:
         assert class_private_create_key is WorkerManager.__create_key, "Use create() method"
 
         self.__mp_manager = mp_manager
+
         self.__names_to_queue: dict[str, queue_wrapper.QueueWrapper] = {}
 
-    def add_queues(self, queue_properties: list[QueuePropertyData]) -> int:
+    def add_queues(self, queue_properties: list[queue_property_data.QueuePropertyData]) -> int:
         """
         queue_properties: Property data of the queues to be added.
             Queues must have unique names. A queue with a name that has already been added is rejected. If there are duplicate names in the argument, the queue with the lower index is added and subsequent duplicates are rejected.
@@ -167,7 +58,7 @@ class WorkerManager:
                 continue
 
             result, queue = queue_wrapper.QueueWrapper.create(
-                self.__mp_manager, queue_property.max_size
+                self.__mp_manager, queue_property,
             )
             if not result:
                 print(f"ERROR: Failed to create queue: {queue_name}")

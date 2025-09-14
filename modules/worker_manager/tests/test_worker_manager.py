@@ -4,6 +4,7 @@ Test worker manager.
 
 import pytest
 
+from modules.worker_manager import queue_property_data
 from modules.worker_manager import worker_manager
 
 
@@ -25,17 +26,17 @@ def manager() -> worker_manager.WorkerManager:  # type: ignore
 
 
 @pytest.fixture
-def queue_properties() -> list[worker_manager.QueuePropertyData]:  # type: ignore
+def queue_properties() -> list[queue_property_data.QueuePropertyData]:  # type: ignore
     """
     Some queue properties in a list.
     """
     max_size = 5
 
-    result, queue_property_1 = worker_manager.QueuePropertyData.create("1", max_size)
+    result, queue_property_1 = queue_property_data.QueuePropertyData.create("1", max_size)
     assert result
     assert queue_property_1 is not None
 
-    result, queue_property_2 = worker_manager.QueuePropertyData.create("2", max_size)
+    result, queue_property_2 = queue_property_data.QueuePropertyData.create("2", max_size)
     assert result
     assert queue_property_2 is not None
 
@@ -50,7 +51,7 @@ class TestAddQueues:
     def test_normal(
         self,
         manager: worker_manager.WorkerManager,
-        queue_properties: list[worker_manager.QueuePropertyData],
+        queue_properties: list[queue_property_data.QueuePropertyData],
     ) -> None:
         """
         Normal.
@@ -70,7 +71,7 @@ class TestAddQueues:
     def test_duplicate_in_argument(
         self,
         manager: worker_manager.WorkerManager,
-        queue_properties: list[worker_manager.QueuePropertyData],
+        queue_properties: list[queue_property_data.QueuePropertyData],
     ) -> None:
         """
         Duplicate entry in queue_properties.
@@ -84,7 +85,7 @@ class TestAddQueues:
     def test_duplicate_in_manager(
         self,
         manager: worker_manager.WorkerManager,
-        queue_properties: list[worker_manager.QueuePropertyData],
+        queue_properties: list[queue_property_data.QueuePropertyData],
     ) -> None:
         """
         Duplicate entry already in manager.
