@@ -24,7 +24,7 @@ class WorkerController:
             print("ERROR: Queue max size must be greater than 0")
             return False, None
 
-        return True, WorkerController(cls, mp_manager, max_size)
+        return True, WorkerController(cls.__create_key, mp_manager, max_size)
 
     def __init__(self, class_private_create_key: object, mp_manager: multiprocessing.managers.SyncManager, max_size: int) -> None:
         """
