@@ -31,7 +31,7 @@ def manager_empty() -> worker_manager.WorkerManager:  # type: ignore
 @pytest.fixture
 def queue_properties() -> list[queue_property_data.QueuePropertyData]:  # type: ignore
     """
-    Some queue property data in a list.
+    Queue property data in a list.
     """
     max_size = 5
 
@@ -47,37 +47,55 @@ def queue_properties() -> list[queue_property_data.QueuePropertyData]:  # type: 
 
 
 @pytest.fixture
-def more_queue_properties() -> list[queue_property_data.QueuePropertyData]:  # type: ignore
+def input_queue_properties() -> list[queue_property_data.QueuePropertyData]:  # type: ignore
     """
-    More queue property data in a lsit.
+    Input queue property data in a list.
     """
     max_size = 5
 
-    result, queue_property_3 = queue_property_data.QueuePropertyData.create("3", max_size)
+    result, input_queue_property_1 = queue_property_data.QueuePropertyData.create("input_queue_1", max_size)
     assert result
-    assert queue_property_3 is not None
+    assert input_queue_property_1 is not None
 
-    result, queue_property_4 = queue_property_data.QueuePropertyData.create("4", max_size)
+    result, input_queue_property_2 = queue_property_data.QueuePropertyData.create("input_queue_2", max_size)
     assert result
-    assert queue_property_4 is not None
+    assert input_queue_property_2 is not None
 
-    yield [queue_property_3, queue_property_4]  # type: ignore
+    yield [input_queue_property_1, input_queue_property_2]  # type: ignore
+
+
+@pytest.fixture
+def output_queue_properties() -> list[queue_property_data.QueuePropertyData]:  # type: ignore
+    """
+    Output queue property data in a lsit.
+    """
+    max_size = 5
+
+    result, output_queue_property_1 = queue_property_data.QueuePropertyData.create("output_queue_1", max_size)
+    assert result
+    assert output_queue_property_1 is not None
+
+    result, output_queue_property_2 = queue_property_data.QueuePropertyData.create("output_queue_2", max_size)
+    assert result
+    assert output_queue_property_2 is not None
+
+    yield [output_queue_property_1, output_queue_property_2]  # type: ignore
 
 
 @pytest.fixture
 def manager_with_queues(
     manager_empty: worker_manager.WorkerManager,
-    queue_properties: list[queue_property_data.QueuePropertyData],
-    more_queue_properties: list[queue_property_data.QueuePropertyData],
+    input_queue_properties: list[queue_property_data.QueuePropertyData],
+    output_queue_properties: list[queue_property_data.QueuePropertyData],
 ) -> worker_manager.WorkerManager:  # type: ignore
     """
     Worker manager with queues.
     """
-    count_added = manager_empty.add_queues(queue_properties)
-    assert count_added == len(queue_properties)
+    count_added = manager_empty.add_queues(input_queue_properties)
+    assert count_added == len(input_queue_properties)
 
-    count_added = manager_empty.add_queues(more_queue_properties)
-    assert count_added == len(more_queue_properties)
+    count_added = manager_empty.add_queues(output_queue_properties)
+    assert count_added == len(output_queue_properties)
 
     yield manager_empty  # type: ignore
 
@@ -85,13 +103,13 @@ def manager_with_queues(
 @pytest.fixture
 def manager_with_input_queues_only(
     manager_empty: worker_manager.WorkerManager,
-    queue_properties: list[queue_property_data.QueuePropertyData],
+    input_queue_properties: list[queue_property_data.QueuePropertyData],
 ) -> worker_manager.WorkerManager:  # type: ignore
     """
     Worker manager with queues.
     """
-    count_added = manager_empty.add_queues(queue_properties)
-    assert count_added == len(queue_properties)
+    count_added = manager_empty.add_queues(input_queue_properties)
+    assert count_added == len(input_queue_properties)
 
     yield manager_empty  # type: ignore
 
@@ -99,13 +117,13 @@ def manager_with_input_queues_only(
 @pytest.fixture
 def manager_with_output_queues_only(
     manager_empty: worker_manager.WorkerManager,
-    more_queue_properties: list[queue_property_data.QueuePropertyData],
+    output_queue_properties: list[queue_property_data.QueuePropertyData],
 ) -> worker_manager.WorkerManager:  # type: ignore
     """
     Worker manager with queues.
     """
-    count_added = manager_empty.add_queues(more_queue_properties)
-    assert count_added == len(more_queue_properties)
+    count_added = manager_empty.add_queues(output_queue_properties)
+    assert count_added == len(output_queue_properties)
 
     yield manager_empty  # type: ignore
 
@@ -144,8 +162,8 @@ def worker_properties() -> list[worker_property_data.WorkerPropertyData]:  # typ
     # pylint: enable=unused-argument
 
     args2 = (2, "test")
-    input_queue_names_2 = ["1", "2"]
-    output_queue_names_2 = ["3", "4"]
+    input_queue_names_2 = ["input_queue_1", "input_queue_2"]
+    output_queue_names_2 = ["output_queue_1", "output_queue_2"]
 
     result, worker_property_1 = worker_property_data.WorkerPropertyData.create(
         count, stub1, (), [], []
