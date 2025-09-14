@@ -141,3 +141,81 @@ class TestCreate:
 
         assert result
         assert worker is not None
+
+    def test_input_queues_empty(
+        self,
+        output_queues: list[queue_wrapper.QueueWrapper],
+        controller: worker_controller.WorkerController,
+    ) -> None:
+        """
+        Input queues empty.
+        """
+        result, worker = process_wrapper.ProcessWrapper.create(
+            stub2, (0, ""), [], output_queues, controller
+        )
+
+        assert not result
+        assert worker is None
+
+    def test_output_queues_empty(
+        self,
+        input_queues: list[queue_wrapper.QueueWrapper],
+        controller: worker_controller.WorkerController,
+    ) -> None:
+        """
+        Output queues empty.
+        """
+        result, worker = process_wrapper.ProcessWrapper.create(
+            stub2, (0, ""), input_queues, [], controller
+        )
+
+        assert not result
+        assert worker is None
+
+    def test_input_queues_extra(
+        self,
+        input_queues: list[queue_wrapper.QueueWrapper],
+        output_queues: list[queue_wrapper.QueueWrapper],
+        controller: worker_controller.WorkerController,
+    ) -> None:
+        """
+        Input queues too many.
+        """
+        result, worker = process_wrapper.ProcessWrapper.create(
+            stub2, (0, ""), input_queues + output_queues, output_queues, controller
+        )
+
+        assert not result
+        assert worker is None
+
+    def test_output_queues_extra(
+        self,
+        input_queues: list[queue_wrapper.QueueWrapper],
+        output_queues: list[queue_wrapper.QueueWrapper],
+        controller: worker_controller.WorkerController,
+    ) -> None:
+        """
+        Output queues too many.
+        """
+        result, worker = process_wrapper.ProcessWrapper.create(
+            stub2, (0, ""), input_queues, output_queues + input_queues, controller
+        )
+
+        assert not result
+        assert worker is None
+
+    def test_queues_wrong_name(
+        self,
+        input_queues: list[queue_wrapper.QueueWrapper],
+        output_queues: list[queue_wrapper.QueueWrapper],
+        controller: worker_controller.WorkerController,
+    ) -> None:
+        """
+        Mixed up queues.
+        """
+        result, worker = process_wrapper.ProcessWrapper.create(
+            stub2, (0, ""), output_queues, input_queues, controller
+        )
+
+        assert not result
+        assert worker is None
