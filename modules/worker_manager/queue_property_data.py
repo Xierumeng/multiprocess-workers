@@ -15,7 +15,7 @@ class QueuePropertyData:
     ) -> tuple[True, "QueuePropertyData"] | tuple[False, None]:
         """
         name: Name of the queue. Must not be empty string.
-        max_size: Maximum number of items that can be held in the queue.
+        max_size: Maximum number of items that can be held in the queue. Must be greater than 0.
 
         Return: Success, object.
         """

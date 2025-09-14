@@ -9,7 +9,7 @@ from . import queue_property_data
 
 class QueueWrapper:
     """
-    Wrapper for an underlying queue proxy which also stores maximum size.
+    Wrapper for an underlying queue proxy and other information.
     """
 
     __create_key = object()
