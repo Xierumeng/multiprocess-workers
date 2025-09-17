@@ -7,9 +7,9 @@ import multiprocessing.managers
 
 from . import queue_property_data
 from . import queue_wrapper
-from . import worker_controller
 from . import worker_property_data
-from .private import process_wrapper
+from .private import process_property_data
+from .private import worker_group
 
 
 class WorkerManager:
@@ -53,7 +53,7 @@ class WorkerManager:
         self.__names_to_queue: dict[str, queue_wrapper.QueueWrapper] = {}
 
         self.__controller_max_size = controller_max_size
-        self.__names_to_worker_group: dict[str, list[process_wrapper.ProcessWrapper]] = {}
+        self.__names_to_worker_group: dict[str, worker_group.WorkerGroup] = {}
 
     def add_queues(self, queue_properties: list[queue_property_data.QueuePropertyData]) -> int:
         """
@@ -146,36 +146,30 @@ class WorkerManager:
         # Get Pylance to stop complaining
         assert output_queues is not None
 
-        # It is okay to drop these process handles since the workers have not been started.
-        workers: list[process_wrapper.ProcessWrapper] = []
-        for _ in range(0, worker_property.count):
-            result, controller = worker_controller.WorkerController.create(
-                self.__mp_manager, self.__controller_max_size
-            )
-            if not result:
-                print(f"ERROR: Failed to create worker controller for: {worker_name}")
-                return False
+        result, process_property = process_property_data.ProcessPropertyData.create(
+            worker_property.target_function,
+            worker_property.target_arguments,
+            input_queues,
+            output_queues,
+        )
+        if not result:
+            print(f"ERROR: Failed to create worker properties: {worker_name}")
+            return False
 
-            # Get Pylance to stop complaining
-            assert controller is not None
+        # Get Pylance to stop complaining
+        assert process_property is not None
 
-            result, worker = process_wrapper.ProcessWrapper.create(
-                worker_property.target_function,
-                worker_property.target_arguments,
-                input_queues,
-                output_queues,
-                controller,
-            )
-            if not result:
-                print(f"ERROR: Failed to create worker: {worker_name}")
-                return False
+        result, group = worker_group.WorkerGroup.create(
+            worker_property.count, process_property, self.__mp_manager, self.__controller_max_size
+        )
+        if not result:
+            print(f"ERROR: Failed to create workers: {worker_name}")
+            return False
 
-            # Get Pylance to stop complaining
-            assert worker is not None
+        # Get Pylance to stop complaining
+        assert group is not None
 
-            workers.append(worker)
-
-        self.__names_to_worker_group[worker_name] = workers
+        self.__names_to_worker_group[worker_name] = group
 
         return True
 
