@@ -9,7 +9,7 @@ import pytest
 from modules.worker_manager import queue_property_data
 from modules.worker_manager import queue_wrapper
 from modules.worker_manager import worker_controller
-from modules.worker_manager.private import process_wrapper
+from modules.worker_manager.private import process_property_data
 
 
 # Test functions use test fixture signature names and access class privates
@@ -45,19 +45,6 @@ def stub2(
 
 
 # pylint: enable=unused-argument
-
-
-@pytest.fixture
-def controller() -> worker_controller.WorkerController:  # type: ignore
-    """
-    Worker controller.
-    """
-    mp_manager = mp.Manager()
-    result, controller = worker_controller.WorkerController.create(mp_manager, 5)
-    assert result
-    assert controller is not None
-
-    yield controller  # type: ignore
 
 
 @pytest.fixture
@@ -117,11 +104,11 @@ class TestCreate:
     Test create() method.
     """
 
-    def test_normal_1(self, controller: worker_controller.WorkerController) -> None:
+    def test_normal_1(self) -> None:
         """
         Normal.
         """
-        result, worker = process_wrapper.ProcessWrapper.create(stub1, (), [], [], controller)
+        result, worker = process_property_data.ProcessPropertyData.create(stub1, (), [], [])
 
         assert result
         assert worker is not None
@@ -130,13 +117,15 @@ class TestCreate:
         self,
         input_queues: list[queue_wrapper.QueueWrapper],
         output_queues: list[queue_wrapper.QueueWrapper],
-        controller: worker_controller.WorkerController,
     ) -> None:
         """
         Normal.
         """
-        result, worker = process_wrapper.ProcessWrapper.create(
-            stub2, (0, ""), input_queues, output_queues, controller
+        result, worker = process_property_data.ProcessPropertyData.create(
+            stub2,
+            (0, ""),
+            input_queues,
+            output_queues,
         )
 
         assert result
@@ -145,13 +134,15 @@ class TestCreate:
     def test_input_queues_empty(
         self,
         output_queues: list[queue_wrapper.QueueWrapper],
-        controller: worker_controller.WorkerController,
     ) -> None:
         """
         Input queues empty.
         """
-        result, worker = process_wrapper.ProcessWrapper.create(
-            stub2, (0, ""), [], output_queues, controller
+        result, worker = process_property_data.ProcessPropertyData.create(
+            stub2,
+            (0, ""),
+            [],
+            output_queues,
         )
 
         assert not result
@@ -160,13 +151,15 @@ class TestCreate:
     def test_output_queues_empty(
         self,
         input_queues: list[queue_wrapper.QueueWrapper],
-        controller: worker_controller.WorkerController,
     ) -> None:
         """
         Output queues empty.
         """
-        result, worker = process_wrapper.ProcessWrapper.create(
-            stub2, (0, ""), input_queues, [], controller
+        result, worker = process_property_data.ProcessPropertyData.create(
+            stub2,
+            (0, ""),
+            input_queues,
+            [],
         )
 
         assert not result
@@ -176,13 +169,15 @@ class TestCreate:
         self,
         input_queues: list[queue_wrapper.QueueWrapper],
         output_queues: list[queue_wrapper.QueueWrapper],
-        controller: worker_controller.WorkerController,
     ) -> None:
         """
         Input queues too many.
         """
-        result, worker = process_wrapper.ProcessWrapper.create(
-            stub2, (0, ""), input_queues + output_queues, output_queues, controller
+        result, worker = process_property_data.ProcessPropertyData.create(
+            stub2,
+            (0, ""),
+            input_queues + output_queues,
+            output_queues,
         )
 
         assert not result
@@ -192,13 +187,15 @@ class TestCreate:
         self,
         input_queues: list[queue_wrapper.QueueWrapper],
         output_queues: list[queue_wrapper.QueueWrapper],
-        controller: worker_controller.WorkerController,
     ) -> None:
         """
         Output queues too many.
         """
-        result, worker = process_wrapper.ProcessWrapper.create(
-            stub2, (0, ""), input_queues, output_queues + input_queues, controller
+        result, worker = process_property_data.ProcessPropertyData.create(
+            stub2,
+            (0, ""),
+            input_queues,
+            output_queues + input_queues,
         )
 
         assert not result
@@ -208,13 +205,15 @@ class TestCreate:
         self,
         input_queues: list[queue_wrapper.QueueWrapper],
         output_queues: list[queue_wrapper.QueueWrapper],
-        controller: worker_controller.WorkerController,
     ) -> None:
         """
         Mixed up queues.
         """
-        result, worker = process_wrapper.ProcessWrapper.create(
-            stub2, (0, ""), output_queues, input_queues, controller
+        result, worker = process_property_data.ProcessPropertyData.create(
+            stub2,
+            (0, ""),
+            output_queues,
+            input_queues,
         )
 
         assert not result
