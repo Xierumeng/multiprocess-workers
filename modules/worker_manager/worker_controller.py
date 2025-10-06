@@ -18,12 +18,14 @@ class WorkerController:
         """
         Worker commands.
         """
-        Exit = 1
+
+        EXIT = 1
 
     class Heartbeat:
         """
         Heartbeat to inform worker manager that the worker is alive.
         """
+
         def __init__(self) -> None:
             """
             Adds local timestamp.
@@ -135,7 +137,7 @@ class WorkerController:
         Return: Success.
         """
         try:
-            self.__manager_to_worker_exit_queue.put_nowait(WorkerController.Command.Exit)
+            self.__manager_to_worker_exit_queue.put_nowait(WorkerController.Command.EXIT)
         except queue.Full as exception:
             print(f"WARN: Manager to worker exit queue already has exit command: {exception}")
 

@@ -13,15 +13,17 @@ class ProcessWrapper:
     """
     Wrapper for an underlying process and other information.
     """
+
     class State(enum.Enum):
         """
         State of the process.
         """
-        Ready = 1
-        RunningHealthy = 2
-        RunningTimeout = 3
-        Paused = 4
-        Exited = 5
+
+        READY = 1
+        RUNNING_HEALTHY = 2
+        RUNNING_TIMEOUT = 3
+        PAUSED = 4
+        EXITED = 5
 
     __create_key = object()
 
@@ -65,13 +67,13 @@ class ProcessWrapper:
         self.__worker = worker
         self.__controller = controller
 
-        self.__state = ProcessWrapper.State.Ready
+        self.__state = ProcessWrapper.State.READY
 
     def __del__(self) -> None:
         """
         Destructor.
         """
-        if self.__state == ProcessWrapper.State.Exited:
+        if self.__state == ProcessWrapper.State.EXITED:
             return
 
         self.stop(0)
@@ -84,13 +86,13 @@ class ProcessWrapper:
 
         Return: Success.
         """
-        if self.__state != ProcessWrapper.State.Ready:
+        if self.__state != ProcessWrapper.State.READY:
             print(f"ERROR: Process {self.__worker.ident} has already started")
             return False
 
         self.__worker.start()
 
-        self.__state = ProcessWrapper.State.RunningHealthy
+        self.__state = ProcessWrapper.State.RUNNING_HEALTHY
 
         return True
 
@@ -100,7 +102,9 @@ class ProcessWrapper:
 
         Return: Success.
         """
-        if self.__state != (ProcessWrapper.State.RunningHealthy or ProcessWrapper.State.RunningTimeout):
+        if self.__state != (
+            ProcessWrapper.State.RUNNING_HEALTHY or ProcessWrapper.State.RUNNING_TIMEOUT
+        ):
             print(f"ERROR: Process {self.__worker.ident} is not running")
             return False
 
@@ -110,7 +114,7 @@ class ProcessWrapper:
             print(f"ERROR: Controller failed to command process {self.__worker.ident} to pause")
             return False
 
-        self.__state = ProcessWrapper.State.Paused
+        self.__state = ProcessWrapper.State.PAUSED
 
         return True
 
@@ -120,7 +124,7 @@ class ProcessWrapper:
 
         Return: Success.
         """
-        if self.__state != ProcessWrapper.State.Paused:
+        if self.__state != ProcessWrapper.State.PAUSED:
             print(f"ERROR: Process {self.__worker.ident} is not paused")
             return False
 
@@ -129,7 +133,7 @@ class ProcessWrapper:
             print(f"ERROR: Controller failed to command process {self.__worker.ident} to resume")
             return False
 
-        self.__state = ProcessWrapper.State.RunningHealthy
+        self.__state = ProcessWrapper.State.RUNNING_HEALTHY
 
         return True
 
@@ -141,24 +145,26 @@ class ProcessWrapper:
 
         Return: Success.
         """
-        if self.__state == ProcessWrapper.State.Ready:
-            print(f"ERROR: Process has not started")
+        if self.__state == ProcessWrapper.State.READY:
+            print("ERROR: Process has not started")
             return False
 
-        if self.__state == ProcessWrapper.State.Exited:
+        if self.__state == ProcessWrapper.State.EXITED:
             print(f"ERROR: Process {self.__worker.ident} is already stopped")
             return False
 
         if timeout < 0:
-            print(f"ERROR: Timeout cannot be negative")
+            print("ERROR: Timeout cannot be negative")
             return False
 
-        if self.__state == ProcessWrapper.State.Paused:
+        if self.__state == ProcessWrapper.State.PAUSED:
             self.resume()
 
         result = self.__controller.manager_command_exit()
         if not result:
-            print(f"WARN: Controller failed to command process {self.__worker.ident} to exit, terminating")
+            print(
+                f"WARN: Controller failed to command process {self.__worker.ident} to exit, terminating"
+            )
             self.__worker.terminate()
 
             return True
@@ -175,6 +181,6 @@ class ProcessWrapper:
         if exit_code != 0:
             print(f"WARN: Process exited abnormally with code: {exit_code}")
         else:
-            print(f"INFO: Process exited normally")
+            print("INFO: Process exited normally")
 
         return True
